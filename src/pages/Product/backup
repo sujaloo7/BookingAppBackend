@@ -1,0 +1,733 @@
+import React, { useState, useEffect } from "react"
+import {
+  Row,
+  Col,
+  Card,
+  CardBody,
+  Button,
+  Table,
+  ButtonToggle,
+} from "reactstrap"
+import { UncontrolledAlert } from "reactstrap"
+import {
+  getSize,
+  getAttribute,
+  getAttributeValue,
+  addProduct,
+  getCategory,
+} from "repositories/productRepository"
+import { useHistory } from "react-router-dom"
+import { CKEditor } from "@ckeditor/ckeditor5-react"
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic"
+
+// availity-reactstrap-validation
+import { AvForm, AvField } from "availity-reactstrap-validation"
+import { set } from "lodash"
+import { select } from "redux-saga/effects"
+
+const AddProduct = props => {
+  const [hsn, sethsn] = useState("")
+  const [name, setName] = useState("")
+  const [category, setCategory] = useState([])
+  const [minQty, setMinQty] = useState("")
+  const [attVal, setAttVal] = useState([])
+  const [tagTags, setTags] = useState([])
+  const [description, setDescription] = useState("")
+  const [refundable, setRefundable] = useState(false)
+  const [refundableText, setRefundableText] = useState("")
+  const [combination, setCombination] = useState([])
+  const [thumbnail, setThumbnail] = useState(null)
+  const [productImages, setProductImages] = useState([])
+  const [thumbnailImg, setThumbnailImg] = useState(null)
+  const [size, setSize] = useState([])
+  const [sizeSelect, setSizeSelect] = useState([])
+  const [attribute, setAttribute] = useState([])
+  const [attributeSelect, setAttributeSelect] = useState([])
+  const [cat, setCat] = useState([])
+  const [catSelect, setCatSelect] = useState([])
+  const [mrp, setmrp] = useState(0)
+  const [discount, setDiscount] = useState(0)
+  const [offerPrice, setOfferPrice] = useState(0)
+  const [categoryId, setcategoryId] = useState("")
+  const [tax, setTax] = useState(0)
+  const [quantity, setQuantity] = useState(0)
+  const [metaTitle, setMetaTitle] = useState("")
+  const [metaDes, setMetaDes] = useState("")
+  const [metaImage, setMetaImage] = useState("")
+  const [button, setButton] = useState("Submit")
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const history = useHistory()
+  const [type, setType] = useState("")
+  const [toggle, setToggle] = useState(false)
+  const [attributeDatas, setAttributeDatas] = useState({})
+  const [variation, setVariation] = useState(false)
+  const [variantArr, setVariantArr] = useState([
+    { variant_price: "", variant_quantity: "" },
+  ])
+
+  useEffect(async () => {
+    let typ = window.location.pathname.split("/").pop()
+    if (typ == "new") {
+      let resSize = await getSize({ is_all: true })
+      setSize(resSize.data)
+      let resAttribute = await getAttribute({ is_all: true })
+      setAttribute(resAttribute.data)
+      let resCategory = await getCategory({ is_all: true })
+      setCat(resCategory.data)
+      console.log("att", resAttribute.data)
+      setButton("Update")
+    }
+    setType(typ)
+  }, [props.success])
+
+  const thumbImage = e => {
+    let file = e.target.files[0]
+    console.log("this is file thun", file)
+
+    setThumbnailImg(file)
+  }
+
+  const imagefn = e => {
+    let file = e.target.files
+    console.log("this is file", file)
+    setProductImages(file)
+  }
+
+  const onChangeSize = e => {
+    let selectedSizes = Array.from(e.target.selectedOptions).map(
+      element => element.value
+    )
+    console.log("size check", selectedSizes)
+    setSizeSelect(selectedSizes)
+    setCombination(selectedSizes)
+  }
+  const onChangeCategory = e => {
+    setcategoryId(e.target.value)
+  }
+  const onChangeAttribute = async e => {
+    let selectedAttributes = Array.from(e.target.selectedOptions).map(element =>
+      JSON.parse(element.value)
+    )
+    console.log("e attr", selectedAttributes)
+    if (selectedAttributes.length > 0) {
+      let val = await getAttributeValueFn(selectedAttributes)
+
+      setAttVal(val)
+    }
+
+    setAttributeSelect(selectedAttributes)
+    set
+  }
+  async function getAttributeValueFn(selectedAttributes) {
+    let valArray = []
+
+    return new Promise(async (resolve, reject) => {
+      for (let i = 0; i < selectedAttributes.length; i++) {
+        let getVal = await getAttributeValue({
+          is_all: true,
+          attribute_id: selectedAttributes[i]._id,
+        })
+        valArray.push(getVal.data)
+      }
+
+      return resolve(valArray)
+    })
+  }
+  const attributeValueOnchange = (e, index) => {
+    let attributes = attributeDatas
+    attributes[index.toString()] = Array.from(e.target.selectedOptions).map(
+      ele => {
+        return JSON.parse(ele.value)
+      }
+    )
+    setAttributeDatas({ ...attributeDatas, attributes })
+    let a = []
+    Object.keys(attributes).map(ele => {
+      console.log("hello", a.push(attributes[ele]))
+    })
+    a.pop()
+    let b = a.map(ele =>
+      ele.map(ele1 => {
+        return ele1?.attribute_value
+      })
+    )
+
+    b.push(sizeSelect)
+    let out = combine(b)
+    let output = out.map(ele => ele.join("-"))
+    setCombination(output)
+
+    console.log("value check", output)
+  }
+
+  function combine(list, n = 0, result = [], current = []) {
+    console.log("list", list)
+    if (n === list.length) result.push(current)
+    else
+      list[n].forEach(item => combine(list, n + 1, result, [...current, item]))
+
+    return result
+  }
+
+  const handleVariant = (e, index) => {
+    let variantArray = JSON.parse(JSON.stringify(variantArr))
+
+    variantArray[index] = {
+      ...variantArray[index],
+      [e.target.name]: e.target.value,
+    }
+    setVariantArr(variantArray)
+  }
+
+  async function handleValidSubmit(event, values) {
+    if (type !== "new") {
+      setSize(values.size)
+      let res = await updateSize({
+        size: values.size,
+        size_id: type,
+      })
+      if (res.status == 1) {
+        setSuccess(res.message)
+
+        setTimeout(() => {
+          setSuccess(null)
+          setSize("")
+          history.push("/sizes")
+        }, 3000)
+      } else {
+        setError(res.message)
+        setTimeout(() => {
+          setError(null)
+        }, 5000)
+      }
+    } else {
+      console.log("askljhdjkgsakgdhkskajgdjk", variantArr)
+
+      sethsn(values.hsn)
+      setName(values.product_name)
+      setCategory(values.category)
+      setMinQty(values.minimum_qty)
+      setTags(values.tags)
+      setRefundable(values.refundable)
+      setRefundableText(values.hsn)
+      // setThumbnail(values.tumbnail_image)
+      // setProductImages(productImages)
+      setSize(values.size)
+      setAttribute(values.attribute)
+      setmrp(values.mrp)
+      setDiscount(values.discount)
+      setOfferPrice(values.offer_price)
+      setTax(values.tax)
+      setQuantity(values.quantity)
+      setMetaTitle(values.meta_title)
+      setMetaDes(values.meta_description)
+      setMetaImage(values.meta_image)
+
+      let formD = new FormData()
+
+      formD.append("hsn", values.hsn)
+      formD.append("product_name", values.product_name)
+      formD.append("category_id", categoryId)
+      formD.append("minimum_qty", values.minimum_qty)
+      formD.append("tags", values.tags)
+      formD.append("refundable", values.refundable)
+      formD.append("refundable_text", values.hsn)
+      // formD.append("cod", values.hsn)
+      formD.append("meta_title", values.hsn)
+      formD.append("meta_description", values.hsn)
+      // formD.append("shipping_weight", values.hsn)
+      // formD.append("shipping_weight_type", values.hsn)
+      // formD.append("product_height", values.hsn)
+      // formD.append("product_height_type", values.hsn)
+      // formD.append("product_length", values.hsn)
+      // formD.append("product_length_type", values.hsn)
+      // formD.append("product_width", values.hsn)
+      // formD.append("product_width_type", values.hsn)
+      formD.append("mrp", values.mrp)
+      formD.append("offer_price", values.offer_price)
+      formD.append("discount", values.discount)
+      formD.append("tax", values.tax)
+      formD.append("quantity", values.quantity)
+      formD.append("product_description", values.product_description)
+      for (let i = 0; i < productImages.length; i++) {
+        formD.append("product_img", productImages[i])
+      }
+
+      formD.append("thumb", thumbnailImg)
+
+      console.log("multip,e", productImages)
+      let call = await addProduct(formD)
+    }
+  }
+  return (
+    <React.Fragment>
+      <Row>
+        <Col lg="12">
+          {error ? (
+            <UncontrolledAlert color="danger" isOpen={true} dismissible>
+              {error}
+            </UncontrolledAlert>
+          ) : null}
+          {success ? (
+            <UncontrolledAlert color="success" isOpen={true} dismissible>
+              {success}
+            </UncontrolledAlert>
+          ) : null}
+        </Col>
+      </Row>
+
+      <AvForm
+        className="form-horizontal"
+        onValidSubmit={(e, v) => {
+          // console.log(v)
+          handleValidSubmit(e, v)
+        }}
+      >
+        <Card>
+          <CardBody>
+            <h4 className="card-title mb-4">Product Information</h4>
+
+            <div
+              className="form-group"
+              style={{ marginLeft: "20px", lineHeight: "3em", width: "80%" }}
+            >
+              <AvField
+                name="hsn"
+                label="HSN"
+                // value={size}
+                className="form-control"
+                placeholder="Enter HSN"
+                type="text"
+                required
+                grid={{ sm: 10 }}
+              />
+              <br />
+              <AvField
+                name="product_name"
+                label="Product Name"
+                // value={size}
+                className="form-control"
+                placeholder="Enter Product Name"
+                type="text"
+                required
+                grid={{ sm: 10 }}
+              />
+              <br />
+              <AvField
+                name="category"
+                label="Category"
+                // value={size}
+                className="form-control"
+                type="select"
+                onChange={onChangeCategory}
+                // required
+
+                grid={{ sm: 10 }}
+              >
+                {cat?.map((ele, index) => {
+                  return (
+                    <option key={index} value={ele._id}>
+                      {ele.name}
+                    </option>
+                  )
+                })}
+              </AvField>
+              <br />
+              <AvField
+                name="minimum_qty"
+                label="Minimum Quantity"
+                // value={size}
+                className="form-control"
+                placeholder="Enter Size"
+                type="text"
+                required
+                grid={{ sm: 10 }}
+              />
+              <br />
+              <AvField
+                name="tags"
+                label="Tags"
+                // value={size}
+                className="form-control"
+                placeholder="Enter Tags"
+                type="text"
+                required
+                grid={{ sm: 10 }}
+              />
+              <br />
+              <div style={{ display: "flex" }}>
+                <div style={{ width: "17%" }}>
+                  <label style={{ float: "left" }} htmlFor="">
+                    Description
+                  </label>
+                </div>
+                <div
+                  style={{
+                    width: "85%",
+                  }}
+                >
+                  <CKEditor
+                    editor={ClassicEditor}
+                    data="<p>Hello from CKEditor 5!</p>"
+                    onReady={editor => {
+                      // You can store the "editor" and use when it is needed.
+                      console.log("Editor is ready to use!", editor)
+                    }}
+                    onChange={(event, editor) => {
+                      const data = editor.getData()
+                      console.log({ event, editor, data })
+                    }}
+                  />
+                </div>
+              </div>
+              <br />
+              <AvField
+                name="refundable"
+                label="Refundable"
+                // value={size}
+                className="form-control"
+                placeholder="Refundable"
+                type="checkbox"
+                grid={{ sm: 10 }}
+              />
+              <br />
+              {/* <AvField
+                name="refundable_text"
+                label="Refundable Text"
+                // value={size}
+                className="form-control"
+                placeholder="Refundable"
+                type="text"
+                grid={{ sm: 10 }}
+              /> */}
+            </div>
+          </CardBody>
+        </Card>
+        <br />
+        <Card>
+          <CardBody>
+            <h4 className="card-title mb-4">Product Images</h4>
+            <div
+              className="form-group"
+              style={{ marginLeft: "20px", lineHeight: "3em", width: "80%" }}
+            >
+              <AvField
+                name="thumbnail_image"
+                label="Thumbnail Image"
+                onChange={thumbImage}
+                // value={size}
+                className="form-control"
+                type="file"
+                grid={{ sm: 10 }}
+              />
+              <br />
+
+              <AvField
+                name="product_image[]"
+                label="Product Images"
+                // value={size}
+                // onChange={}
+                onChange={imagefn}
+                className="form-control"
+                type="file"
+                accept="image/*"
+                multiple
+                grid={{ sm: 10 }}
+              />
+              <AvField
+                name="variations"
+                label="Variations"
+                // value={true}
+                checked={variation}
+                className="form-control"
+                placeholder="Refundable"
+                type="checkbox"
+                onChange={e => setVariation(!variation)}
+                grid={{ sm: 10 }}
+              />
+            </div>
+          </CardBody>
+        </Card>
+        <br />
+        {variation ? (
+          <Card>
+            <CardBody>
+              <h4 className="card-title mb-4">Product Variations</h4>
+              <div
+                className="form-group"
+                style={{ marginLeft: "20px", lineHeight: "3em", width: "80%" }}
+              >
+                <AvField
+                  name="size"
+                  label="Size"
+                  // value={size}
+                  className="form-control"
+                  type="select"
+                  multiple
+                  onChange={onChangeSize}
+                  // required
+
+                  grid={{ sm: 10 }}
+                >
+                  {size.map((ele, index) => {
+                    return (
+                      <option key={index} value={ele.size}>
+                        {ele.size}
+                      </option>
+                    )
+                  })}
+                </AvField>
+                <br />
+                <AvField
+                  name="attributes"
+                  label="Attributes"
+                  // value={size}
+                  className="form-control"
+                  multiple
+                  type="select"
+                  onChange={onChangeAttribute}
+                  grid={{ sm: 10 }}
+                >
+                  <br />
+                  {attribute
+                    ? attribute.map(ele => {
+                        return (
+                          <option value={JSON.stringify(ele)}>
+                            {" "}
+                            {ele.attribute_name}
+                          </option>
+                        )
+                      })
+                    : ""}
+                </AvField>
+                <br />
+                {attributeSelect
+                  ? attributeSelect.map((ele, index) => {
+                      return (
+                        <div className="form-group">
+                          <AvField
+                            name={ele._id}
+                            label={ele.attribute_name}
+                            // value={size}
+                            className="form-control"
+                            multiple
+                            onChange={e => attributeValueOnchange(e, index)}
+                            type="select"
+                            grid={{ sm: 10 }}
+                          >
+                            {attVal[index]?.map(ele1 => {
+                              console.log(ele1, "ele1")
+                              return (
+                                <option value={JSON.stringify(ele1)}>
+                                  {" "}
+                                  {ele1.attribute_value}
+                                </option>
+                              )
+                            })}
+                          </AvField>
+                          <br />
+                        </div>
+                      )
+                    })
+                  : ""}
+              </div>
+              <br />
+              {combination.length > 0 ? (
+                <div className="form-group">
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Variant</th>
+                        <th>Variant Price</th>
+                        <th>Quantity</th>
+                        <th>Thumbnail Image</th>
+                        <th>variant Image</th>
+                      </tr>
+                    </thead>
+                  </Table>
+                </div>
+              ) : (
+                ""
+              )}
+              <br />
+              <div className="table-responsive">
+                <Table hover>
+                  {combination
+                    ? combination.map((ele, index) => {
+                        return (
+                          <div className="form-group">
+                            <tr key={index}>
+                              <th scope="row">{index + 1}</th>
+
+                              <td>{ele}</td>
+                              <td>
+                                <input
+                                  name="variant_price"
+                                  type="text"
+                                  className="form-control"
+                                  onChange={e => handleVariant(e, index)}
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  name="variant_quantity"
+                                  type="text"
+                                  className="form-control"
+                                  onChange={e => handleVariant(e, index)}
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  name="variant_thumb"
+                                  type="file"
+                                  className="form-control"
+                                  onChange={e => handleVariant(e, index)}
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  name="variant_image"
+                                  type="file"
+                                  className="form-control"
+                                  onChange={e => handleVariant(e, index)}
+                                />
+                              </td>
+                            </tr>
+                          </div>
+                        )
+                      })
+                    : ""}
+                </Table>
+              </div>
+            </CardBody>
+          </Card>
+        ) : (
+          ""
+        )}
+        <br />
+        <Card>
+          <CardBody>
+            <h4 className="card-title mb-4">Product Price and stocks</h4>
+            <div
+              className="form-group"
+              style={{ marginLeft: "20px", lineHeight: "3em", width: "80%" }}
+            >
+              <AvField
+                name="mrp"
+                label="MRP"
+                // value={size}
+                className="form-control"
+                type="text"
+                placeholder="0"
+                required
+                grid={{ sm: 10 }}
+              />
+              <br />
+
+              <AvField
+                name="discount"
+                label="Discount"
+                // value={size}
+                className="form-control"
+                type="text"
+                placeholder="0"
+                required
+                grid={{ sm: 10 }}
+              />
+              <br />
+
+              <AvField
+                name="offer_price"
+                label="Offer Price"
+                // value={size}
+                className="form-control"
+                type="text"
+                placeholder="0"
+                required
+                grid={{ sm: 10 }}
+              />
+              <br />
+
+              <AvField
+                name="tax"
+                label="Tax Percentage"
+                // value={size}
+                className="form-control"
+                type="text"
+                placeholder="0"
+                required
+                grid={{ sm: 10 }}
+              />
+              <br />
+
+              <AvField
+                name="quantity"
+                label="Quantity"
+                // value={size}
+                className="form-control"
+                type="text"
+                placeholder="0"
+                required
+                grid={{ sm: 10 }}
+              />
+              <br />
+            </div>
+          </CardBody>
+        </Card>
+        <br />
+        <Card>
+          <CardBody>
+            <h4 className="card-title mb-4">Meta Details</h4>
+            <div
+              className="form-group"
+              style={{ marginLeft: "20px", lineHeight: "3em", width: "80%" }}
+            >
+              <AvField
+                name="meta_title"
+                label="Meta Title"
+                // value={size}
+                className="form-control"
+                type="text"
+                placeholder="Enter Meta Title"
+                grid={{ sm: 10 }}
+              />
+              <br />
+
+              <AvField
+                name="meta_description"
+                label="Meta Description"
+                // value={size}
+                className="form-control"
+                type="textarea"
+                placeholder="Enter Meta Description"
+                grid={{ sm: 10 }}
+              />
+              <br />
+
+              <AvField
+                name="meta_image"
+                label="Meta Image"
+                // value={size}
+                className="form-control"
+                type="file"
+                grid={{ sm: 10 }}
+              />
+              <br />
+            </div>
+          </CardBody>
+        </Card>
+
+        <div className="text-center mt-4">
+          <Button type="submit" color="primary" size="lg">
+            Submit
+          </Button>
+        </div>
+        <br />
+      </AvForm>
+    </React.Fragment>
+  )
+}
+
+export default AddProduct
