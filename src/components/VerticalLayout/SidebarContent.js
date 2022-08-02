@@ -125,7 +125,7 @@ const SidebarContent = props => {
             <li>
               <Link to="/#" className="has-arrow waves-effect">
                 <i className="mdi mdi-buffer"></i>
-                <span>{props.t("User Manager")}</span>
+                <span>{props.t("User Management")}</span>
               </Link>
               <ul className="sub-menu" aria-expanded="false">
                 <li>
@@ -141,24 +141,50 @@ const SidebarContent = props => {
             <li>
               <Link to="/#" className="has-arrow waves-effect">
                 <i className="mdi mdi-buffer"></i>
-                <span>{props.t("Product Manager")}</span>
+                <span>{props.t("Seller Management")}</span>
               </Link>
               <ul className="sub-menu" aria-expanded="false">
                 <li>
-                  <Link to="/categories">{props.t("Categories")}</Link>
+                  <Link to="/user-list">{props.t("Active Seller List")}</Link>
                 </li>
                 <li>
-                  <Link to="/sizes">{props.t("Sizes")}</Link>
+                  <Link to="/block-user-list">
+                    {props.t("Blocked Seller List")}
+                  </Link>
+                </li>
+              </ul>
+            </li>
+            {/* <li>
+              <Link to="/#" className="has-arrow waves-effect">
+                <i className="mdi mdi-location-enter"></i>
+                <span>{props.t("Property Attributes")}</span>
+              </Link>
+              <ul className="sub-menu" aria-expanded="false">
+                <li>
+                  <Link to="/user-list">{props.t("Active User List")}</Link>
                 </li>
                 <li>
-                  <Link to="/attributes">{props.t("Attributes")}</Link>
+                  <Link to="/block-user-list">
+                    {props.t("Blocked User List")}
+                  </Link>
+                </li>
+              </ul>
+            </li> */}
+            <li>
+              <Link to="/#" className="has-arrow waves-effect">
+                <i className="mdi mdi-buffer"></i>
+                <span>{props.t("Location")}</span>
+              </Link>
+              <ul className="sub-menu" aria-expanded="false">
+
+                <li>
+                  <Link to="/states">{props.t("States")}</Link>
                 </li>
                 <li>
-                  <Link to="/add-product/new">{props.t("Add Product")}</Link>
+                  <Link to="/city">{props.t("City")}</Link>
                 </li>
-                <li>
-                  <Link to="/products">{props.t("Product List")}</Link>
-                </li>
+
+
               </ul>
             </li>
             {/* <li>

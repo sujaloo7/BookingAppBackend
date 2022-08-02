@@ -52,16 +52,16 @@ const Dashboard = (props) => {
       <Row>
         <Col xl="3">
           {/* Monthly Earnings */}
-          <MonthlyEarnings />
+          {/* <MonthlyEarnings /> */}
         </Col>
 
         <Col xl="6">
           {/* Email sent */}
-          <EmailSent />
+          {/* <EmailSent /> */}
         </Col>
 
         <Col xl="3">
-          <MonthlyEarnings2 />
+          {/* <MonthlyEarnings2 /> */}
         </Col>
 
       </Row>
@@ -69,31 +69,31 @@ const Dashboard = (props) => {
 
         <Col xl="4" lg="6">
           {/* inbox */}
-          <Inbox />
+          {/* <Inbox /> */}
         </Col>
         <Col xl="4" lg="6">
           {/* recent activity */}
-          <RecentActivity />
+          {/* <RecentActivity /> */}
 
         </Col>
         <Col xl="4">
           {/* widget user */}
-          <WidgetUser />
+          {/* <WidgetUser /> */}
 
           {/* yearly sales */}
-          <YearlySales />
+          {/* <YearlySales /> */}
         </Col>
       </Row>
 
       <Row>
         <Col xl="6">
           {/* latest transactions */}
-          <LatestTransactions />
+          {/* <LatestTransactions /> */}
         </Col>
 
         <Col xl="6">
           {/* latest orders */}
-          <LatestOrders />
+          {/* <LatestOrders /> */}
         </Col>
       </Row>
 

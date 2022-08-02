@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react"
 import { Row, Col, Card, CardBody, Button } from "reactstrap"
 import { UncontrolledAlert } from "reactstrap"
-import {
-  getAttributeValue,
-  updateAttributeValue,
-} from "repositories/productRepository"
+import { addState, updateState, getState } from "repositories/locationRepository"
 import { useHistory } from "react-router-dom"
 
 // availity-reactstrap-validation
 import { AvForm, AvField } from "availity-reactstrap-validation"
 import { set } from "lodash"
 
-const EditAttributeValue = props => {
-  const [attributeValue, setAttributeValue] = useState("")
+const AddState = props => {
+  const [state, setState] = useState("")
+  const [adminId, setAdminId] = useState("")
+  const [sizeId, setSizeId] = useState("")
+  const [button, setButton] = useState("Submit")
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const history = useHistory()
@@ -20,31 +20,60 @@ const EditAttributeValue = props => {
 
   useEffect(async () => {
     let typ = window.location.pathname.split("/").pop()
-
-    let res = await getAttributeValue({ attribute_val_id: typ })
-    setAttributeValue(res.data.attribute_value)
+    if (typ !== "new") {
+      let res = await getState({ state_id: typ })
+      setState(res.data.state_name)
+      setButton("Update")
+    }
     setType(typ)
-  }, [props.success, attributeValue])
+  }, [props.success, state])
 
   async function handleValidSubmit(event, values) {
-    setAttributeValue(values.attribute_value)
-    let res = await updateAttributeValue({
-      attribute_value: values.attribute_value,
-      attribute_val_id: type,
-    })
-    if (res.status == 1) {
-      setSuccess(res.message)
+    console.log("state", values.state)
+    if (type !== "new") {
+      setState(values.state)
+      console.log("edit")
+      let res = await updateState({
+        state_name: values.state,
+        state_id: type,
+      })
+      if (res.status == 1) {
+        setSuccess(res.message)
 
-      setTimeout(() => {
-        setSuccess(null)
-        setAttributeValue("")
-        history.push("/sizes")
-      }, 3000)
+        setTimeout(() => {
+          setSuccess(null)
+          setState("")
+          history.push("/states")
+        }, 3000)
+      } else {
+
+
+        setError(res.message)
+        setTimeout(() => {
+          setError(null)
+        }, 5000)
+      }
     } else {
-      setError(res.message)
-      setTimeout(() => {
-        setError(null)
-      }, 5000)
+
+      setState(values.state)
+      let res = await addState({
+        state_name: values.state
+      })
+      console.log("add wala", res)
+      if (res.status == 1) {
+        setSuccess(res.message)
+
+        setTimeout(() => {
+          setSuccess(null)
+          setState("")
+          history.push("/states")
+        }, 3000)
+      } else {
+        setError(res.message)
+        setTimeout(() => {
+          setError(null)
+        }, 5000)
+      }
     }
   }
 
@@ -65,9 +94,9 @@ const EditAttributeValue = props => {
         </Col>
       </Row>
 
-      <h4 className="card-title mb-4">Update Attribute Value</h4>
+      <h4 className="card-title mb-4">Add State</h4>
 
-      <Card className="ms-auto me-auto ">
+      <Card>
         <CardBody>
           <AvForm
             className="form-horizontal"
@@ -77,11 +106,11 @@ const EditAttributeValue = props => {
           >
             <div className="form-group">
               <AvField
-                name="attribute_value"
-                label="Attribute Value"
-                value={attributeValue}
+                name="state"
+                label="State Name"
+                value={state}
                 className="form-control"
-                placeholder="Enter Attribute Value"
+                placeholder="Enter State"
                 type="text"
                 required
               />
@@ -89,7 +118,7 @@ const EditAttributeValue = props => {
             </div>
             <div className="text-center mt-4">
               <Button type="submit" color="primary">
-                Update
+                {button}
               </Button>
             </div>
           </AvForm>
@@ -99,4 +128,4 @@ const EditAttributeValue = props => {
   )
 }
 
-export default EditAttributeValue
+export default AddState

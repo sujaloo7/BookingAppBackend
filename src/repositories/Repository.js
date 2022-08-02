@@ -1,5 +1,5 @@
 import axios from "axios"
-const baseDomain = "http://localhost:4000/api"
+const baseDomain = "http://1e71-122-160-30-226.ngrok.io/api"
 const imageDomain = "http://localhost:4000"
 const authorization_prefix = "Bearer "
 import { useEffect } from "react"
@@ -24,5 +24,5 @@ export const serializeQuery = query => {
         key => `${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`
       )
       .join("&")
-  } catch {}
+  } catch { }
 }

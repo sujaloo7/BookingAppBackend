@@ -11,17 +11,17 @@ import BlockUserListPage from "../pages/Users/BlockedUserList"
 
 // Product
 
-import CategoriesListPage from "../pages/Product/CategoryList"
-import CategoryPage from "../pages/Product/Category"
-import SizesListPage from "../pages/Product/SizesList"
-import SizesPage from "../pages/Product/AddSize"
-import AttributesListPage from "../pages/Product/AttributesList"
-import AttributesPage from "../pages/Product/Attributes"
-import AttributeValuePage from "../pages/Product/AttributeValue"
-import EditAttributeValuePage from "../pages/Product/EditAttributeValue"
-import AddProductPage from "../pages/Product/AddProduct"
-import ProductListPage from "../pages/Product/ProductList"
-// import BlockUserListPage from "../pages/Users/BlockedUserList"
+
+import StateListPage from "../pages/Locations/StateList"
+import StatePage from "../pages/Locations/AddState"
+import CityListPage from "../pages/Locations/CityList"
+import CityPage from "../pages/Locations/Addcity"
+
+
+
+// Property
+
+
 
 //Email
 import EmailInbox from "../pages/Email/email-inbox"
@@ -123,16 +123,19 @@ const userRoutes = [
 
   // //Product
 
-  { path: "/categories", component: CategoriesListPage },
-  { path: "/add-category/:id", component: CategoryPage },
-  { path: "/sizes", component: SizesListPage },
-  { path: "/add-size/:id", component: SizesPage },
-  { path: "/attributes", component: AttributesListPage },
-  { path: "/add-attribute/:id", component: AttributesPage },
-  { path: "/attribute-values/:id", component: AttributeValuePage },
-  { path: "/attribute-value/:id", component: EditAttributeValuePage },
-  { path: "/add-product/:id", component: AddProductPage },
-  { path: "/products", component: ProductListPage },
+
+  { path: "/states", component: StateListPage },
+  { path: "/add-state/:id", component: StatePage },
+
+
+  { path: "/city", component: CityListPage },
+  { path: "/city/:id", component: CityPage },
+
+
+
+
+
+
 
   // { path: "/block-user-list", component: BlockUserListPage },
 

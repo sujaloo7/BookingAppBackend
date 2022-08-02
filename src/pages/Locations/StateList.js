@@ -1,17 +1,16 @@
 import React from "react"
 import { useState, useEffect } from "react"
 import { Table, Button, Row, Col } from "reactstrap"
-import { getProduct, updateProduct } from "repositories/productRepository"
+import { getState, updateState } from "repositories/locationRepository"
 import ReactPaginate from "react-paginate"
 import { UncontrolledAlert } from "reactstrap"
 import { useHistory } from "react-router-dom"
 import { AiFillEdit } from "react-icons/ai"
 import { AiOutlineDelete } from "react-icons/ai"
 import { Link } from "react-router-dom"
-import { imageUrl } from "repositories/Repository"
 
-export default function ProductList() {
-  const [productList, setProductList] = useState([])
+export default function StateList() {
+  const [stateList, setStateList] = useState([])
   const [refresh, setRefresh] = useState(false)
   const [dataCount, setDataCount] = useState(0)
   const [pageCount, setPageCount] = useState(10)
@@ -23,17 +22,17 @@ export default function ProductList() {
 
   let pagesize = 10
   useEffect(() => {
-    ProductList()
+    GetState()
     setRefresh(false)
   }, [currentpage, refresh])
 
-  const ProductList = async () => {
-    let res = await getProduct({
+  const GetState = async () => {
+    let res = await getState({
       page: currentpage,
       pagesize: pagesize,
     })
 
-    setProductList(res.data)
+    setStateList(res.data)
     setDataCount(res.count)
     let pageCount1 = Math.ceil(res.count / pagesize)
     setPageCount(pageCount1)
@@ -43,12 +42,10 @@ export default function ProductList() {
     setCurrentPage(value.selected + 1)
     console.log("value", value.selected + 1)
   }
-
-  const deleteProduct = async value => {
-    let res = await updateProduct({ product_id: value, is_delete: true })
+  const deleteState = async value => {
+    let res = await updateState({ state_id: value, is_delete: true })
     if (res.status == 1) {
       setRefresh(true)
-
       setSuccess(res.message)
       setTimeout(() => {
         setSuccess(null)
@@ -65,8 +62,8 @@ export default function ProductList() {
     <>
       <Row>
         <Col lg="12">
-          <Link to="/add-product/new">
-            <Button style={{ float: "right" }}>Add Product</Button>
+          <Link to="/add-state/new">
+            <Button style={{ float: "right" }}>Add State</Button>
           </Link>
         </Col>
       </Row>
@@ -90,38 +87,20 @@ export default function ProductList() {
           <thead>
             <tr>
               <th>#</th>
-              <th>Product Name</th>
-              <th>Image</th>
-              <th>Quantity</th>
-              <th>MRP</th>
-              <th>Discount</th>
-              <th>Offer Price</th>
-              <th>Tax</th>
+              <th>State Name</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {productList?.map((ele, index) => {
+            {stateList?.map((ele, index) => {
               //   console.log("ele", ele)
               return (
                 <tr key={ele._id}>
                   <th scope="row">{index + 1}</th>
-                  <td>{ele.product_name}</td>
-                  <td>
-                    <img
-                      src={`${imageUrl}${ele.product_images[0]}`}
-                      height={30}
-                      width={30}
-                    />
-                  </td>
-                  <td>{ele.quantity}</td>
-                  <td>{ele.mrp}</td>
-                  <td>{ele.discount}</td>
-                  <td>{ele.offer_price}</td>
-                  <td>{ele.tax}</td>
+                  <td>{ele.state_name}</td>
 
                   <div>
-                    <Link to={`/add-product/${ele._id}`} className="pe-3">
+                    <Link to={`/add-state/${ele._id}`} className="pe-3">
                       <AiFillEdit size={20} />
                     </Link>
 
@@ -129,7 +108,7 @@ export default function ProductList() {
                       <AiOutlineDelete
                         size={20}
                         onClick={e => {
-                          deleteProduct(ele._id)
+                          deleteState(ele._id)
                         }}
                       />
                     </Link>
@@ -160,7 +139,7 @@ export default function ProductList() {
           activeClassName="active"
           renderOnZeroPageCount={null}
 
-          //   renderOnZeroPageCount={null}
+        //   renderOnZeroPageCount={null}
         />
       </div>
     </>
