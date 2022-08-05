@@ -1,5 +1,5 @@
 import axios from "axios"
-const baseDomain = "http://1e71-122-160-30-226.ngrok.io/api"
+const baseDomain = "http://294e-122-160-30-226.ngrok.io/api"
 const imageDomain = "http://localhost:4000"
 const authorization_prefix = "Bearer "
 import { useEffect } from "react"

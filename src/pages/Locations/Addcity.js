@@ -1,18 +1,26 @@
-import React, { useState, useEffect } from "react"
-import { Row, Col, Card, CardBody, Button } from "reactstrap"
-import { UncontrolledAlert } from "reactstrap"
-import { addCity, updateCity, getCity } from "repositories/locationRepository"
-import { useHistory } from "react-router-dom"
+import React, { useState, useEffect } from "react";
+import { Row, Col, Card, CardBody, Button } from "reactstrap";
+import { UncontrolledAlert } from "reactstrap";
+import { addCity, updateCity, getCity, getState } from "repositories/locationRepository";
+import { useHistory } from "react-router-dom";
+import ReactPaginate from "react-paginate";
+
 // availity-reactstrap-validation
 import { AvForm, AvField } from "availity-reactstrap-validation"
 import { set } from "lodash"
 
 const AddCity = props => {
     const [city, setCity] = useState("")
+    const [stateList, setStateList] = useState([])
+
     const [adminId, setAdminId] = useState("")
+    const [refresh, setRefresh] = useState(false)
+
     const [sizeId, setSizeId] = useState("")
     const [button, setButton] = useState("Submit")
     const [error, setError] = useState(null)
+    const [currentpage, setCurrentPage] = useState(1)
+
     const [success, setSuccess] = useState(null)
     const history = useHistory()
     const [type, setType] = useState("")
@@ -27,6 +35,17 @@ const AddCity = props => {
         setType(typ)
     }, [props.success, city])
 
+    useEffect(() => {
+        getState()
+        setRefresh(false)
+    }, [currentpage, refresh])
+
+    const getState = async () => {
+        let res = await getState({
+            is_all: true
+
+        })
+    }
     async function handleValidSubmit(event, values) {
         console.log("state", values.state)
         if (type !== "new") {
@@ -102,7 +121,21 @@ const AddCity = props => {
                             handleValidSubmit(e, v)
                         }}
                     >
+
+
                         <div className="form-group">
+
+                            <AvField className="form-control" type="select" name="select" label="State" helpMessage="Choose Your State Here">
+                                {stateList?.map((ele, index) => {
+
+
+                                    <option>{ele.state_name}</option>
+
+
+                                })}
+
+                            </AvField>
+                            <br></br>
                             <AvField
                                 name="state"
                                 label="City Name"
@@ -113,6 +146,7 @@ const AddCity = props => {
                                 required
                             />
                             <br />
+
                         </div>
                         <div className="text-center mt-4">
                             <Button type="submit" color="primary">
