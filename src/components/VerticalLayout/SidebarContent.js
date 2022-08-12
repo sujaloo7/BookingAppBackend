@@ -124,7 +124,7 @@ const SidebarContent = props => {
             </li> */}
             <li>
               <Link to="/#" className="has-arrow waves-effect">
-                <i className="mdi mdi-buffer"></i>
+                <i className="mdi mdi-account"></i>
                 <span>{props.t("User Management")}</span>
               </Link>
               <ul className="sub-menu" aria-expanded="false">
@@ -140,16 +140,16 @@ const SidebarContent = props => {
             </li>
             <li>
               <Link to="/#" className="has-arrow waves-effect">
-                <i className="mdi mdi-buffer"></i>
-                <span>{props.t("Seller Management")}</span>
+                <i className="mdi mdi-account"></i>
+                <span>{props.t("Owner Management")}</span>
               </Link>
               <ul className="sub-menu" aria-expanded="false">
                 <li>
-                  <Link to="/user-list">{props.t("Active Seller List")}</Link>
+                  <Link to="/owner-list">{props.t("Active Owner List")}</Link>
                 </li>
                 <li>
-                  <Link to="/block-user-list">
-                    {props.t("Blocked Seller List")}
+                  <Link to="/block-owner-list">
+                    {props.t("Blocked Owner List")}
                   </Link>
                 </li>
               </ul>
@@ -172,7 +172,7 @@ const SidebarContent = props => {
             </li> */}
             <li>
               <Link to="/#" className="has-arrow waves-effect">
-                <i className="mdi mdi-buffer"></i>
+                <i className="mdi mdi-map"></i>
                 <span>{props.t("Location")}</span>
               </Link>
               <ul className="sub-menu" aria-expanded="false">
@@ -183,6 +183,37 @@ const SidebarContent = props => {
                 <li>
                   <Link to="/city">{props.t("City")}</Link>
                 </li>
+
+
+              </ul>
+            </li>
+
+            <li>
+              <Link to="/#" className="has-arrow waves-effect">
+                <i className="mdi mdi-cog"></i>
+                <span>{props.t("Settings")}</span>
+              </Link>
+              <ul className="sub-menu" aria-expanded="false">
+
+                <li>
+                  <Link to="/about">{props.t("About Us")}</Link>
+                </li>
+                <li>
+                  <Link to="/faqlist">{props.t("FaqList")}</Link>
+                </li>
+                <li>
+                  <Link to="/contact">{props.t("Contact Us")}</Link>
+                </li>
+                <li>
+                  <Link to="/privacy">{props.t("Privacy Policy")}</Link>
+                </li>
+                <li>
+                  <Link to="/cancelationpolicy">{props.t("Cancellation Policy")}</Link>
+                </li>
+                <li>
+                  <Link to="/terms">{props.t("Terms & Conditions")}</Link>
+                </li>
+
 
 
               </ul>

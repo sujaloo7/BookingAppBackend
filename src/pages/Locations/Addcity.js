@@ -4,7 +4,6 @@ import { UncontrolledAlert } from "reactstrap";
 import { addCity, updateCity, getCity, getState } from "repositories/locationRepository";
 import { useHistory } from "react-router-dom";
 import ReactPaginate from "react-paginate";
-
 // availity-reactstrap-validation
 import { AvForm, AvField } from "availity-reactstrap-validation"
 import { set } from "lodash"
@@ -12,6 +11,8 @@ import { set } from "lodash"
 const AddCity = props => {
     const [city, setCity] = useState("")
     const [stateList, setStateList] = useState([])
+    const [stateId, setStateId] = useState([])
+
 
     const [adminId, setAdminId] = useState("")
     const [refresh, setRefresh] = useState(false)
@@ -36,15 +37,18 @@ const AddCity = props => {
     }, [props.success, city])
 
     useEffect(() => {
-        getState()
+        GetState()
         setRefresh(false)
     }, [currentpage, refresh])
 
-    const getState = async () => {
+    const GetState = async () => {
         let res = await getState({
             is_all: true
 
         })
+        setStateList(res.data)
+
+
     }
     async function handleValidSubmit(event, values) {
         console.log("state", values.state)
@@ -128,8 +132,8 @@ const AddCity = props => {
                             <AvField className="form-control" type="select" name="select" label="State" helpMessage="Choose Your State Here">
                                 {stateList?.map((ele, index) => {
 
-
-                                    <option>{ele.state_name}</option>
+                                    console.log("ele", ele)
+                                    return <option>{ele.state_name}</option>
 
 
                                 })}

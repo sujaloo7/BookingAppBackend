@@ -8,6 +8,9 @@ import UserProfile from "../pages/Authentication/user-profile"
 
 import UserListPage from "../pages/Users/ActiveUserList"
 import BlockUserListPage from "../pages/Users/BlockedUserList"
+import BlockOwnerListPage from "../pages/Users/BlockedOwnerList"
+import OwnerListPage from "../pages/Users/ActiveOwnerList"
+
 
 // Product
 
@@ -16,6 +19,19 @@ import StateListPage from "../pages/Locations/StateList"
 import StatePage from "../pages/Locations/AddState"
 import CityListPage from "../pages/Locations/CityList"
 import CityPage from "../pages/Locations/Addcity"
+
+// setting
+
+import about from "../pages/settings/AboutUs"
+import faq from "../pages/settings/AddFaq"
+import contact from "../pages/settings/ContactUs"
+import faqlist from "../pages/settings/FaqList"
+import privacy from "../pages/settings/PrivacyPolicy"
+import returnpolicy from "../pages/settings/ReturnPolicy"
+import terms from "../pages/settings/Term&Condition"
+
+
+
 
 
 
@@ -120,6 +136,8 @@ const userRoutes = [
 
   { path: "/user-list", component: UserListPage },
   { path: "/block-user-list", component: BlockUserListPage },
+  { path: "/owner-list", component: OwnerListPage },
+  { path: "/block-owner-list", component: BlockOwnerListPage },
 
   // //Product
 
@@ -132,6 +150,15 @@ const userRoutes = [
   { path: "/city/:id", component: CityPage },
 
 
+  // settings
+
+  { path: "/about", component: about },
+  { path: "/faq/:id", component: faq },
+  { path: "/contact", component: contact },
+  { path: "/faqlist", component: faqlist },
+  { path: "/privacy", component: privacy },
+  { path: "/cancelationpolicy", component: returnpolicy },
+  { path: "/terms", component: terms },
 
 
 

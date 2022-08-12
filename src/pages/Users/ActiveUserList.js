@@ -23,6 +23,7 @@ export default function UserList() {
 
   const UserList = async () => {
     let res = await getUserList({
+      is_user: true,
       page: currentpage,
       pagesize: pagesize,
     })
@@ -108,7 +109,7 @@ export default function UserList() {
                 <tr key={ele._id}>
                   <th scope="row">{index + 1}</th>
                   <td>{ele.mobile}</td>
-                  <td>{ele.fname + " " + ele.lname}</td>
+                  <td>{ele.name}</td>
                   <td>{ele.email}</td>
                   <div>
                     <Button
@@ -150,7 +151,7 @@ export default function UserList() {
           activeClassName="active"
           renderOnZeroPageCount={null}
 
-          //   renderOnZeroPageCount={null}
+        //   renderOnZeroPageCount={null}
         />
       </div>
     </>
